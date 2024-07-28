@@ -11,6 +11,9 @@ from plotly.subplots import make_subplots  # Importing make_subplots for subplot
 from math import ceil
 import requests
 
+# Import forum
+from forum import forum
+
 # Class to hold an array of stock tips for users
 class StockTips:
     def __init__(self):
@@ -131,7 +134,7 @@ except Exception as e:
     st.error(f"Failed to download stock data: {e}")
 
 # Tabs for different sections of the app
-stock_comparison, financialData, news, videos_tab, articles_tab, tips_tab = st.tabs(["Stock Comparison", "Financial Data", "Selected News", "Videos", "Articles", "Tips"])
+stock_comparison, financialData, news, videos_tab, articles_tab, tips_tab , forum_tab= st.tabs(["Stock Comparison", "Financial Data", "Selected News", "Videos", "Articles", "Tips" , "Forum" ])
 
 # Financial data implementation
 with financialData:
@@ -265,3 +268,7 @@ with tips_tab:
     st.write("Consider the following tips before investing in stocks:")
     for tip in selected_tips:
         st.write(f"- {tip}")
+
+
+with forum_tab:
+    forum()
