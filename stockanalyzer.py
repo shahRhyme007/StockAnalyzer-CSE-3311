@@ -92,7 +92,7 @@ def fetch_stock_news(ticker):
         return []
 # Load environment variables and retrieve API keys
 # Streamlit app setup
-polygon_key = st.secrets["polygon_api_key"]
+polygon_key = st.secrets["NZ241DDn8eoAltjY6x_bmi9wweI6dcnu"]
 st.markdown("<center><h1 style='color: red;'>StockAnalyzer</h1></center>", unsafe_allow_html=True)
 stock = st.sidebar.text_input('Stock', value='AAPL')
 start_date = st.sidebar.date_input('Start Date')
