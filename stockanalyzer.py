@@ -76,7 +76,7 @@ selected_videos = video_array.get_videos()
 def fetch_stock_news(ticker):
     # Access the API key using st.secrets
     # API key is stored in the .streamlit/secrets.toml file WHERE YOU STORE THE KEY IN A VARIABLE CALLED polygon_api_key
-    polygon_key = st.secrets["polygon_api_key"]
+    polygon_key = st.secrets["NZ241DDn8eoAltjY6x_bmi9wweI6dcnu"]
     base_url = "https://api.polygon.io/v2/reference/news"
     params = {
         "ticker": ticker,
