@@ -1,3 +1,5 @@
+# forum_backend.py
+
 from flask import Flask, request, jsonify, make_response, session
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -12,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Change this to a secure random key
+app.secret_key = 'your_secure_secret_key_here'  # Change this to a secure random key
 CORS(app, supports_credentials=True, origins="http://localhost:8501")
 
 login_manager = LoginManager()
@@ -72,10 +74,11 @@ def register():
         new_user.set_password(password)
         session.add(new_user)
         session.commit()
+        logger.info(f"User registered successfully: {username}")
         return jsonify({'message': 'User registered successfully'}), 201
     except Exception as e:
         session.rollback()
-        logger.error(f"Failed to register user: {e}")
+        logger.error(f"Failed to register user: {str(e)}")
         return jsonify({'message': 'Failed to register user', 'error': str(e)}), 500
     finally:
         session.close()
@@ -90,12 +93,14 @@ def login():
         user = session_db.query(User).filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user)
+            logger.info(f"User logged in successfully: {username}")
             resp = make_response(jsonify({'message': 'Login successful'}))
             resp.set_cookie('session', app.secret_key, httponly=True, samesite='Lax')
             return resp, 200
+        logger.warning(f"Invalid login attempt for user: {username}")
         return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
-        logger.error(f"Failed to login: {e}")
+        logger.error(f"Failed to login: {str(e)}")
         return jsonify({'message': 'Failed to login', 'error': str(e)}), 500
     finally:
         session_db.close()
@@ -104,6 +109,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    logger.info("User logged out successfully")
     resp = make_response(jsonify({'message': 'Logout successful'}))
     resp.set_cookie('session', '', expires=0)
     return resp, 200
@@ -123,7 +129,7 @@ def get_posts():
             'tags': post.tags
         } for post in posts]), 200
     except Exception as e:
-        logger.error(f"Failed to fetch posts: {e}")
+        logger.error(f"Failed to fetch posts: {str(e)}")
         return jsonify({'message': 'Failed to fetch posts', 'error': str(e)}), 500
     finally:
         session_db.close()
@@ -146,7 +152,7 @@ def create_post():
         return jsonify({'message': 'Post created successfully'}), 201
     except Exception as e:
         session_db.rollback()
-        logger.error(f"Failed to create post: {e}")
+        logger.error(f"Failed to create post: {str(e)}")
         return jsonify({'message': 'Failed to create post', 'error': str(e)}), 500
     finally:
         session_db.close()
@@ -162,10 +168,11 @@ def upvote_post(post_id):
             session_db.commit()
             logger.info(f"Post upvoted successfully: {post.title}")
             return jsonify({'message': 'Post upvoted successfully'}), 200
+        logger.warning(f"Attempt to upvote non-existent post: {post_id}")
         return jsonify({'message': 'Post not found'}), 404
     except Exception as e:
         session_db.rollback()
-        logger.error(f"Failed to upvote post: {e}")
+        logger.error(f"Failed to upvote post: {str(e)}")
         return jsonify({'message': 'Failed to upvote post', 'error': str(e)}), 500
     finally:
         session_db.close()
